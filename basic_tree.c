@@ -50,6 +50,28 @@ void insert(struct Node *root, int data) {
   }
 }
 
+void printLevelOrder(struct Node *root) {
+  if (root == NULL)
+    return;
+
+  struct Node *queue[100];
+  int front = 0, rear = 0;
+
+  queue[rear++] = root;
+
+  while (front < rear) {
+    struct Node *current = queue[front++];
+    printf("%d ", current->data);
+
+    if (current->left != NULL) {
+      queue[rear++] = current->left;
+    }
+    if (current->right != NULL) {
+      queue[rear++] = current->right;
+    }
+  }
+}
+
 void inorderTraversal(struct Node *root) {
   if (root != NULL) {
     inorderTraversal(root->left);
@@ -81,23 +103,16 @@ struct Node *findMin(struct Node *root) {
   return root;
 }
 
+// this is actually the BST deletion, sorry
 struct Node *deleteNode(struct Node *root, int key) {
   if (root == NULL)
     return root;
 
-  // If the key to be deleted is smaller than the root's key, then it lies in
-  // the left subtree
   if (key < root->data) {
     root->left = deleteNode(root->left, key);
-  }
-  // If the key to be deleted is greater than the root's key, then it lies in
-  // the right subtree
-  else if (key > root->data) {
+  } else if (key > root->data) {
     root->right = deleteNode(root->right, key);
-  }
-  // If key is the same as root's key, then this is the node to be deleted
-  else {
-    // Node with only one child or no child
+  } else {
     if (root->left == NULL) {
       struct Node *temp = root->right;
       free(root);
@@ -108,14 +123,10 @@ struct Node *deleteNode(struct Node *root, int key) {
       return temp;
     }
 
-    // Node with two children: get the inorder successor (smallest in the right
-    // subtree)
     struct Node *temp = findMin(root->right);
 
-    // Copy the inorder successor's content to this node
     root->data = temp->data;
 
-    // Delete the inorder successor
     root->right = deleteNode(root->right, temp->data);
   }
   return root;
@@ -143,7 +154,6 @@ int main() {
   postorderTraversal(root);
   printf("\n");
 
-  // Deleting a node
   printf("Deleting node 3\n");
   root = deleteNode(root, 3);
   printf("In-order traversal after deletion: ");
